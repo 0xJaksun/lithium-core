@@ -13,7 +13,9 @@
     "test:watch": "vitest"
   },
   "dependencies": {
-    "@lithium-ai/core": "workspace:*"
+    "@lithium-ai/core": "workspace:*",
+    "postgres": "^3.4.9",
+    "zod": "^4.4.3"
   },
   "devDependencies": {
     "typescript": "6.0.3",
