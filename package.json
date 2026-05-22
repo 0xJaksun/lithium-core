@@ -1,22 +1,11 @@
 {
-  "name": "@lithium-ai/core",
-  "version": "0.0.1",
-  "description": "Hierarchical versioned knowledge graphs.",
-  "type": "module",
-  "license": "MIT",
-  "exports": {
-    ".": "./src/index.ts"
-  },
+  "name": "lithium-core",
+  "private": true,
   "packageManager": "pnpm@9.15.9",
   "scripts": {
-    "typecheck": "tsc --noEmit",
-    "test": "vitest run",
-    "test:watch": "vitest",
-    "build": "tsc"
-  },
-  "devDependencies": {
-    "typescript": "6.0.3",
-    "vitest": "4.1.5"
+    "typecheck": "pnpm -r typecheck",
+    "test": "pnpm -r test",
+    "build": "pnpm -r build"
   },
   "engines": {
     "node": ">=20"
