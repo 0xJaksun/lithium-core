@@ -1,0 +1,25 @@
+{
+  "name": "@lithium-ai/postgres",
+  "version": "0.0.1",
+  "description": "PostgreSQL adapter for @lithium-ai/core.",
+  "type": "module",
+  "license": "MIT",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "dependencies": {
+    "@lithium-ai/core": "workspace:*"
+  },
+  "devDependencies": {
+    "typescript": "6.0.3",
+    "vitest": "4.1.5"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
