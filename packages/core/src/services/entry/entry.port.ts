@@ -18,4 +18,8 @@ export interface EntryStoragePort {
   getLatestVersion(
     entryId: string
   ): Promise<Result<EntryVersion | null, ValidationError | SystemError>>;
+
+  list(
+    clusterIds: string[]
+  ): Promise<Result<Entry[], ValidationError | SystemError>>;
 }
