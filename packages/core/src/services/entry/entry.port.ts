@@ -30,4 +30,8 @@ export interface EntryStoragePort {
   findById(
     id: string
   ): Promise<Result<Entry | null, ValidationError | SystemError>>;
+
+  getLatestVersions(
+    entryIds: string[]
+  ): Promise<Result<EntryVersion[], ValidationError | SystemError>>;
 }

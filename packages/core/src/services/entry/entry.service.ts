@@ -24,6 +24,15 @@ export interface IEntryService {
     clusterIds: string[];
   }): Promise<Result<Entry[], ValidationError | SystemError>>;
 
+  listWithLatestVersion(params: {
+    clusterIds: string[];
+  }): Promise<
+    Result<
+      Array<{ entry: Entry; version: EntryVersion }>,
+      ValidationError | SystemError
+    >
+  >;
+
   get(params: {
     id: string;
     version?: number;
@@ -92,6 +101,42 @@ export class EntryService implements IEntryService {
     }
 
     return this.port.list(params.clusterIds);
+  }
+
+  async listWithLatestVersion(params: {
+    clusterIds: string[];
+  }): Promise<
+    Result<
+      Array<{ entry: Entry; version: EntryVersion }>,
+      ValidationError | SystemError
+    >
+  > {
+    if (params.clusterIds.length === 0) {
+      return { success: true, value: [] };
+    }
+
+    const entries = await this.port.list(params.clusterIds);
+    if (!entries.success) return entries;
+
+    if (entries.value.length === 0) {
+      return { success: true, value: [] };
+    }
+
+    const versions = await this.port.getLatestVersions(
+      entries.value.map((e) => e.id)
+    );
+    if (!versions.success) return versions;
+
+    const versionMap = new Map(
+      versions.value.map((v) => [v.entryId, v])
+    );
+
+    return {
+      success: true,
+      value: entries.value
+        .filter((e) => versionMap.has(e.id))
+        .map((e) => ({ entry: e, version: versionMap.get(e.id)! })),
+    };
   }
 
   async get(params: {
