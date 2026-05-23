@@ -230,4 +230,34 @@ export class PostgresEntryAdapter implements EntryStoragePort {
       };
     }
   }
+
+  public async getLatestVersions(
+    entryIds: string[]
+  ): Promise<Result<EntryVersion[], ValidationError | SystemError>> {
+    try {
+      const result = await this.sql`
+        SELECT DISTINCT ON (entry_id) id, entry_id, version, created_at
+        FROM ${this.sql(this.versionsTable)}
+        WHERE entry_id = ANY(${entryIds})
+        ORDER BY entry_id, version DESC
+      `;
+
+      const parsed = z.array(EntryVersionRow).safeParse(result);
+      if (!parsed.success) {
+        return {
+          success: false,
+          error: new ValidationError(
+            "Invalid entry version data returned from database"
+          ),
+        };
+      }
+
+      return { success: true, value: parsed.data };
+    } catch (error) {
+      return {
+        success: false,
+        error: new SystemError("Failed to get latest versions batch"),
+      };
+    }
+  }
 }
