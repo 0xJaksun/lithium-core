@@ -9,11 +9,22 @@ import { NotFoundError as NotFound } from "../../errors/not-found.error";
 export interface IEntryService {
   create(params: {
     clusterId: string;
-  }): Promise<Result<{ entry: Entry; version: EntryVersion }, ValidationError | SystemError>>;
+  }): Promise<
+    Result<
+      { entry: Entry; version: EntryVersion },
+      ValidationError | SystemError
+    >
+  >;
 
   update(params: {
     id: string;
-  }): Promise<Result<EntryVersion, ValidationError | NotFoundError | SystemError>>;
+  }): Promise<
+    Result<EntryVersion, ValidationError | NotFoundError | SystemError>
+  >;
+
+  list(params: {
+    clusterIds: string[];
+  }): Promise<Result<Entry[], ValidationError | SystemError>>;
 }
 
 export class EntryService implements IEntryService {
@@ -21,7 +32,12 @@ export class EntryService implements IEntryService {
 
   async create(params: {
     clusterId: string;
-  }): Promise<Result<{ entry: Entry; version: EntryVersion }, ValidationError | SystemError>> {
+  }): Promise<
+    Result<
+      { entry: Entry; version: EntryVersion },
+      ValidationError | SystemError
+    >
+  > {
     const entry = await this.port.insert({
       clusterId: params.clusterId,
     });
@@ -41,7 +57,9 @@ export class EntryService implements IEntryService {
 
   async update(params: {
     id: string;
-  }): Promise<Result<EntryVersion, ValidationError | NotFoundError | SystemError>> {
+  }): Promise<
+    Result<EntryVersion, ValidationError | NotFoundError | SystemError>
+  > {
     const latest = await this.port.getLatestVersion(params.id);
     if (!latest.success) return latest;
 
@@ -56,5 +74,15 @@ export class EntryService implements IEntryService {
       entryId: params.id,
       version: latest.value.version + 1,
     });
+  }
+
+  async list(params: {
+    clusterIds: string[];
+  }): Promise<Result<Entry[], ValidationError | SystemError>> {
+    if (params.clusterIds.length === 0) {
+      return { success: true, value: [] };
+    }
+
+    return this.port.list(params.clusterIds);
   }
 }

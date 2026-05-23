@@ -127,4 +127,34 @@ export class PostgresEntryAdapter implements EntryStoragePort {
       };
     }
   }
+
+  public async list(
+    clusterIds: string[]
+  ): Promise<Result<Entry[], ValidationError | SystemError>> {
+    try {
+      const result = await this.sql`
+        SELECT id, cluster_id, created_at
+        FROM entries
+        WHERE cluster_id = ANY(${clusterIds})
+        ORDER BY created_at
+      `;
+
+      const parsed = z.array(EntryRow).safeParse(result);
+      if (!parsed.success) {
+        return {
+          success: false,
+          error: new ValidationError(
+            "Invalid entry data returned from database"
+          ),
+        };
+      }
+
+      return { success: true, value: parsed.data };
+    } catch (error) {
+      return {
+        success: false,
+        error: new SystemError("Failed to list entries"),
+      };
+    }
+  }
 }
