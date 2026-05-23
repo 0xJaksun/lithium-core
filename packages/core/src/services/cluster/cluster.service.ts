@@ -9,6 +9,10 @@ export interface IClusterService {
     parentPath?: string;
     description?: string;
   }): Promise<Result<Cluster, ValidationError | NotFoundError | SystemError>>;
+
+  findByPath(params: {
+    path: string;
+  }): Promise<Result<Cluster | null, ValidationError | SystemError>>;
 }
 
 export class ClusterService implements IClusterService {
@@ -44,5 +48,11 @@ export class ClusterService implements IClusterService {
       name: params.name,
       description: params.description ?? null,
     });
+  }
+
+  async findByPath(params: {
+    path: string;
+  }): Promise<Result<Cluster | null, ValidationError | SystemError>> {
+    return this.port.findByPath(params.path);
   }
 }
