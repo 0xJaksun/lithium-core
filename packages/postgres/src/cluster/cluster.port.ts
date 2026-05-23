@@ -5,7 +5,7 @@ import type {
   InsertCluster,
   Result,
 } from "@lithium-ai/core";
-import { SystemError } from "@lithium-ai/core";
+import { SystemError, ValidationError } from "@lithium-ai/core";
 import { z } from "zod/v4";
 
 const ClusterRow = z
@@ -29,7 +29,9 @@ const ClusterRow = z
 export class PostgresClusterAdapter implements ClusterStoragePort {
   constructor(private readonly sql: Sql) {}
 
-  public async insert(input: InsertCluster): Promise<Result<Cluster>> {
+  public async insert(
+    input: InsertCluster
+  ): Promise<Result<Cluster, ValidationError | SystemError>> {
     try {
       const result = await this.sql`
         INSERT INTO clusters (parent_id, path, name, description)
@@ -47,7 +49,9 @@ export class PostgresClusterAdapter implements ClusterStoragePort {
       if (!parsed.success) {
         return {
           success: false,
-          error: new SystemError("Invalid cluster data returned from database"),
+          error: new ValidationError(
+            "Invalid cluster data returned from database"
+          ),
         };
       }
 
@@ -56,6 +60,35 @@ export class PostgresClusterAdapter implements ClusterStoragePort {
       return {
         success: false,
         error: new SystemError("Failed to insert cluster"),
+      };
+    }
+  }
+
+  public async findByPath(
+    path: string
+  ): Promise<Result<Cluster | null, ValidationError | SystemError>> {
+    try {
+      const result = await this.sql`
+        SELECT id, parent_id, path, name, description, created_at
+        FROM clusters
+        WHERE path = ${path}::ltree
+      `;
+
+      const parsed = z.array(ClusterRow).safeParse(result);
+      if (!parsed.success) {
+        return {
+          success: false,
+          error: new ValidationError(
+            "Invalid cluster data returned from database"
+          ),
+        };
+      }
+
+      return { success: true, value: parsed.data[0] ?? null };
+    } catch (error) {
+      return {
+        success: false,
+        error: new SystemError("Failed to find cluster by path"),
       };
     }
   }

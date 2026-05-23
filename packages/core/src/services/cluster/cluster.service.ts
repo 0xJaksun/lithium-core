@@ -1,13 +1,14 @@
 import type { Cluster } from "./cluster.types";
 import type { Result } from "../../types/result";
 import type { ClusterStoragePort } from "./cluster.port";
+import { NotFoundError, SystemError, ValidationError } from "../../errors";
 
 export interface IClusterService {
   create(params: {
     name: string;
-    parentId?: string;
+    parentPath?: string;
     description?: string;
-  }): Promise<Result<Cluster>>;
+  }): Promise<Result<Cluster, ValidationError | NotFoundError | SystemError>>;
 }
 
 export class ClusterService implements IClusterService {
@@ -15,12 +16,31 @@ export class ClusterService implements IClusterService {
 
   async create(params: {
     name: string;
-    parentId?: string;
+    parentPath?: string;
     description?: string;
-  }): Promise<Result<Cluster>> {
+  }): Promise<Result<Cluster, ValidationError | NotFoundError | SystemError>> {
+    if (!params.parentPath) {
+      return this.port.insert({
+        parentId: null,
+        path: params.name,
+        name: params.name,
+        description: params.description ?? null,
+      });
+    }
+
+    const parent = await this.port.findByPath(params.parentPath);
+    if (!parent.success) return parent;
+
+    if (!parent.value) {
+      return {
+        success: false,
+        error: new NotFoundError("Parent path not found"),
+      };
+    }
+
     return this.port.insert({
-      parentId: params.parentId ?? null,
-      path: params.name,
+      parentId: parent.value.id,
+      path: `${params.parentPath}.${params.name}`,
       name: params.name,
       description: params.description ?? null,
     });

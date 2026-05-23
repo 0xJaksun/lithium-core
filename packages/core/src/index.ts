@@ -1,5 +1,5 @@
 // Types
-export type { Result, Errors } from "./types/result";
+export type { Result } from "./types/result";
 export type { Cluster } from "./services/cluster/cluster.types";
 
 // Errors

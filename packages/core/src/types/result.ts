@@ -1,7 +1,3 @@
-import type { ValidationError, NotFoundError, SystemError } from "../errors";
-
-export type Errors = ValidationError | NotFoundError | SystemError;
-
-export type Result<T, E = Errors> =
+export type Result<T, E extends Error> =
   | { success: true; value: T }
   | { success: false; error: E };
