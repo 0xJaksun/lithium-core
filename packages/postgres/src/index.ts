@@ -1,7 +1,7 @@
 import type { Sql } from "postgres";
 import type { LithiumAdapter } from "@lithium-ai/core";
-import { PostgresClusterAdapter } from "./cluster/cluster.port";
-import { PostgresEntryAdapter } from "./entry/entry.port";
+import { PostgresClusterAdapter } from "./cluster";
+import { PostgresEntryAdapter } from "./entry";
 
 export interface PostgresAdapterOptions {
   schema?: string;
@@ -17,5 +17,5 @@ export function postgresAdapter(
   };
 }
 
-export { PostgresClusterAdapter } from "./cluster/cluster.port";
-export { PostgresEntryAdapter } from "./entry/entry.port";
+export { PostgresClusterAdapter } from "./cluster";
+export { PostgresEntryAdapter } from "./entry";
