@@ -1,7 +1,8 @@
 import type { Cluster } from "./cluster.types";
-import type { Result } from "../../types/result";
+import type { Result } from "../../types";
 import type { ClusterStoragePort } from "./cluster.port";
-import { NotFoundError, SystemError, ValidationError } from "../../errors";
+import type { SystemError, ValidationError } from "../../errors";
+import { NotFoundError } from "../../errors";
 
 export interface IClusterService {
   create(params: {

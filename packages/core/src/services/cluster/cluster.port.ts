@@ -1,6 +1,6 @@
 import type { Cluster } from "./cluster.types";
-import type { Result } from "../../types/result";
-import { SystemError, ValidationError } from "../../errors";
+import type { Result } from "../../types";
+import type { SystemError, ValidationError } from "../../errors";
 
 export type InsertCluster = Omit<Cluster, "id" | "createdAt">;
 

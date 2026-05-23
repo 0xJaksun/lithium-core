@@ -1,29 +1,28 @@
 // Types
-export type { Result } from "./types/result";
-export type { Cluster } from "./services/cluster/cluster.types";
-export type { Entry, EntryVersion } from "./services/entry/entry.types";
-
-// Errors
-export { ValidationError } from "./errors/validation.error";
-export { NotFoundError } from "./errors/not-found.error";
-export { SystemError } from "./errors/system.error";
-
-// Ports
+export type { Result } from "./types";
 export type {
+  Cluster,
   ClusterStoragePort,
   InsertCluster,
-} from "./services/cluster/cluster.port";
+} from "./services/cluster";
 export type {
+  Entry,
+  EntryVersion,
   EntryStoragePort,
   InsertEntry,
   InsertEntryVersion,
-} from "./services/entry/entry.port";
+} from "./services/entry";
 
-// Services
-export { ClusterService } from "./services/cluster/cluster.service";
-export type { IClusterService } from "./services/cluster/cluster.service";
-export { EntryService } from "./services/entry/entry.service";
-export type { IEntryService } from "./services/entry/entry.service";
+// Errors
+export { ValidationError } from "./errors";
+export { NotFoundError } from "./errors";
+export { SystemError } from "./errors";
+
+// Factories
+export { createClusterService } from "./services/cluster";
+export type { IClusterService } from "./services/cluster";
+export { createEntryService } from "./services/entry";
+export type { IEntryService } from "./services/entry";
 
 // Entry point
 export { Lithium } from "./lithium";

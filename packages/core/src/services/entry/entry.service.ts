@@ -1,10 +1,8 @@
 import type { Entry, EntryVersion } from "./entry.types";
-import type { Result } from "../../types/result";
+import type { Result } from "../../types";
 import type { EntryStoragePort } from "./entry.port";
-import type { ValidationError } from "../../errors/validation.error";
-import type { NotFoundError } from "../../errors/not-found.error";
-import type { SystemError } from "../../errors/system.error";
-import { NotFoundError as NotFound } from "../../errors/not-found.error";
+import type { ValidationError, SystemError } from "../../errors";
+import { NotFoundError } from "../../errors";
 
 export interface IEntryService {
   create(params: {
@@ -76,7 +74,7 @@ export class EntryService implements IEntryService {
     if (!latest.value) {
       return {
         success: false,
-        error: new NotFound("Entry not found"),
+        error: new NotFoundError("Entry not found"),
       };
     }
 
@@ -111,7 +109,7 @@ export class EntryService implements IEntryService {
     if (!entry.value) {
       return {
         success: false,
-        error: new NotFound("Entry not found"),
+        error: new NotFoundError("Entry not found"),
       };
     }
 
@@ -138,7 +136,7 @@ export class EntryService implements IEntryService {
     if (!result.value) {
       return {
         success: false,
-        error: new NotFound("Entry version not found"),
+        error: new NotFoundError("Entry version not found"),
       };
     }
 
