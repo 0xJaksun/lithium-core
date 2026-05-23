@@ -8,9 +8,11 @@ import type {
 import { SystemError, ValidationError } from "@lithium-ai/core";
 import { z } from "zod/v4";
 
+const ClusterRowId = z.uuid();
+
 const ClusterRow = z
   .object({
-    id: z.uuid(),
+    id: ClusterRowId,
     parent_id: z.uuid().nullable(),
     path: z.string(),
     name: z.string(),
@@ -118,6 +120,38 @@ export class PostgresClusterAdapter implements ClusterStoragePort {
       return {
         success: false,
         error: new SystemError("Failed to list clusters"),
+      };
+    }
+  }
+
+  public async listDescendantIds(
+    path: string
+  ): Promise<Result<string[], ValidationError | SystemError>> {
+    try {
+      const result = await this.sql`
+        SELECT id FROM clusters
+        WHERE path <@ ${path}::ltree
+        ORDER BY path
+      `;
+
+      const parsed = z.array(z.object({ id: ClusterRowId })).safeParse(result);
+      if (!parsed.success) {
+        return {
+          success: false,
+          error: new ValidationError(
+            "Invalid cluster data returned from database"
+          ),
+        };
+      }
+
+      return {
+        success: true,
+        value: parsed.data.map((row) => row.id),
+      };
+    } catch (error) {
+      return {
+        success: false,
+        error: new SystemError("Failed to list descendant cluster ids"),
       };
     }
   }
