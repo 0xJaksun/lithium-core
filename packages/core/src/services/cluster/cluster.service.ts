@@ -15,6 +15,10 @@ export interface IClusterService {
   }): Promise<Result<Cluster | null, ValidationError | SystemError>>;
 
   list(): Promise<Result<Cluster[], ValidationError | SystemError>>;
+
+  listDescendantIds(params: {
+    path: string;
+  }): Promise<Result<string[], ValidationError | SystemError>>;
 }
 
 export class ClusterService implements IClusterService {
@@ -60,5 +64,11 @@ export class ClusterService implements IClusterService {
 
   async list(): Promise<Result<Cluster[], ValidationError | SystemError>> {
     return this.port.list();
+  }
+
+  async listDescendantIds(params: {
+    path: string;
+  }): Promise<Result<string[], ValidationError | SystemError>> {
+    return this.port.listDescendantIds(params.path);
   }
 }

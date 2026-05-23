@@ -14,4 +14,8 @@ export interface ClusterStoragePort {
   ): Promise<Result<Cluster | null, ValidationError | SystemError>>;
 
   list(): Promise<Result<Cluster[], ValidationError | SystemError>>;
+
+  listDescendantIds(
+    path: string
+  ): Promise<Result<string[], ValidationError | SystemError>>;
 }
