@@ -157,4 +157,71 @@ export class PostgresEntryAdapter implements EntryStoragePort {
       };
     }
   }
+
+  public async getVersion(
+    entryId: string,
+    version: number
+  ): Promise<Result<EntryVersion | null, ValidationError | SystemError>> {
+    try {
+      const result = await this.sql`
+        SELECT id, entry_id, version, created_at
+        FROM entry_versions
+        WHERE entry_id = ${entryId} AND version = ${version}
+      `;
+
+      if (result.length === 0) {
+        return { success: true, value: null };
+      }
+
+      const parsed = EntryVersionRow.safeParse(result[0]);
+      if (!parsed.success) {
+        return {
+          success: false,
+          error: new ValidationError(
+            "Invalid entry version data returned from database"
+          ),
+        };
+      }
+
+      return { success: true, value: parsed.data };
+    } catch (error) {
+      return {
+        success: false,
+        error: new SystemError("Failed to get entry version"),
+      };
+    }
+  }
+
+  public async findById(
+    id: string
+  ): Promise<Result<Entry | null, ValidationError | SystemError>> {
+    try {
+      const result = await this.sql`
+        SELECT id, cluster_id, created_at
+        FROM entries
+        WHERE id = ${id}
+      `;
+
+      if (result.length === 0) {
+        return { success: true, value: null };
+      }
+
+      const parsed = EntryRow.safeParse(result[0]);
+      if (!parsed.success) {
+        return {
+          success: false,
+          error: new ValidationError(
+            "Invalid entry data returned from database"
+          ),
+        };
+      }
+
+      return { success: true, value: parsed.data };
+    } catch (error) {
+      return {
+        success: false,
+        error: new SystemError("Failed to find entry by id"),
+      };
+    }
+  }
 }

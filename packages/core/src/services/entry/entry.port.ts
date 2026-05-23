@@ -22,4 +22,13 @@ export interface EntryStoragePort {
   list(
     clusterIds: string[]
   ): Promise<Result<Entry[], ValidationError | SystemError>>;
+
+  getVersion(
+    entryId: string,
+    version: number
+  ): Promise<Result<EntryVersion | null, ValidationError | SystemError>>;
+
+  findById(
+    id: string
+  ): Promise<Result<Entry | null, ValidationError | SystemError>>;
 }

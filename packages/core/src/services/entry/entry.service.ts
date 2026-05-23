@@ -25,6 +25,16 @@ export interface IEntryService {
   list(params: {
     clusterIds: string[];
   }): Promise<Result<Entry[], ValidationError | SystemError>>;
+
+  get(params: {
+    id: string;
+    version?: number;
+  }): Promise<
+    Result<
+      { entry: Entry; version: EntryVersion },
+      ValidationError | NotFoundError | SystemError
+    >
+  >;
 }
 
 export class EntryService implements IEntryService {
@@ -84,5 +94,54 @@ export class EntryService implements IEntryService {
     }
 
     return this.port.list(params.clusterIds);
+  }
+
+  async get(params: {
+    id: string;
+    version?: number;
+  }): Promise<
+    Result<
+      { entry: Entry; version: EntryVersion },
+      ValidationError | NotFoundError | SystemError
+    >
+  > {
+    const entry = await this.port.findById(params.id);
+    if (!entry.success) return entry;
+
+    if (!entry.value) {
+      return {
+        success: false,
+        error: new NotFound("Entry not found"),
+      };
+    }
+
+    const version = await this.resolveVersion(params.id, params.version);
+    if (!version.success) return version;
+
+    return {
+      success: true,
+      value: { entry: entry.value, version: version.value },
+    };
+  }
+
+  private async resolveVersion(
+    entryId: string,
+    version?: number
+  ): Promise<
+    Result<EntryVersion, ValidationError | NotFoundError | SystemError>
+  > {
+    const result = version
+      ? await this.port.getVersion(entryId, version)
+      : await this.port.getLatestVersion(entryId);
+    if (!result.success) return result;
+
+    if (!result.value) {
+      return {
+        success: false,
+        error: new NotFound("Entry version not found"),
+      };
+    }
+
+    return { success: true, value: result.value };
   }
 }
