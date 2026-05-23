@@ -29,15 +29,21 @@ const ClusterRow = z
   }));
 
 export class PostgresClusterAdapter implements ClusterStoragePort {
-  constructor(private readonly sql: Sql) {}
+  private readonly table: string;
+
+  constructor(private readonly sql: Sql, schema?: string) {
+    this.table = schema ? `${schema}.clusters` : "clusters";
+  }
 
   public async insert(
     input: InsertCluster
   ): Promise<Result<Cluster, ValidationError | SystemError>> {
     try {
       const result = await this.sql`
-        INSERT INTO clusters (parent_id, path, name, description)
-        VALUES (${input.parentId}, ${input.path}::ltree, ${input.name}, ${input.description})
+        INSERT INTO ${this.sql(this.table)} (parent_id, path, name, description)
+        VALUES (${input.parentId}, ${input.path}::ltree, ${input.name}, ${
+        input.description
+      })
         RETURNING
           id,
           parent_id,
@@ -72,7 +78,7 @@ export class PostgresClusterAdapter implements ClusterStoragePort {
     try {
       const result = await this.sql`
         SELECT id, parent_id, path, name, description, created_at
-        FROM clusters
+        FROM ${this.sql(this.table)}
         WHERE path = ${path}::ltree
       `;
 
@@ -101,7 +107,7 @@ export class PostgresClusterAdapter implements ClusterStoragePort {
     try {
       const result = await this.sql`
         SELECT id, parent_id, path, name, description, created_at
-        FROM clusters
+        FROM ${this.sql(this.table)}
         ORDER BY path
       `;
 
@@ -129,7 +135,7 @@ export class PostgresClusterAdapter implements ClusterStoragePort {
   ): Promise<Result<string[], ValidationError | SystemError>> {
     try {
       const result = await this.sql`
-        SELECT id FROM clusters
+        SELECT id FROM ${this.sql(this.table)}
         WHERE path <@ ${path}::ltree
         ORDER BY path
       `;
