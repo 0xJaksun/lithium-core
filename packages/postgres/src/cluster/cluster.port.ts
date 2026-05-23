@@ -92,4 +92,33 @@ export class PostgresClusterAdapter implements ClusterStoragePort {
       };
     }
   }
+
+  public async list(): Promise<
+    Result<Cluster[], ValidationError | SystemError>
+  > {
+    try {
+      const result = await this.sql`
+        SELECT id, parent_id, path, name, description, created_at
+        FROM clusters
+        ORDER BY path
+      `;
+
+      const parsed = z.array(ClusterRow).safeParse(result);
+      if (!parsed.success) {
+        return {
+          success: false,
+          error: new ValidationError(
+            "Invalid cluster data returned from database"
+          ),
+        };
+      }
+
+      return { success: true, value: parsed.data };
+    } catch (error) {
+      return {
+        success: false,
+        error: new SystemError("Failed to list clusters"),
+      };
+    }
+  }
 }

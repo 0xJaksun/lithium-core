@@ -12,4 +12,6 @@ export interface ClusterStoragePort {
   findByPath(
     path: string
   ): Promise<Result<Cluster | null, ValidationError | SystemError>>;
+
+  list(): Promise<Result<Cluster[], ValidationError | SystemError>>;
 }
