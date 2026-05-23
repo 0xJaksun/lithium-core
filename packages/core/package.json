@@ -1,7 +1,7 @@
 {
   "name": "@lithium-ai/core",
   "version": "0.0.1",
-  "description": "Hierarchical versioned knowledge graphs.",
+  "description": "Hierarchical versioned content store for structured context.",
   "type": "module",
   "license": "MIT",
   "exports": {
