@@ -14,4 +14,8 @@ export interface EntryStoragePort {
   insertVersion(
     input: InsertEntryVersion
   ): Promise<Result<EntryVersion, ValidationError | SystemError>>;
+
+  getLatestVersion(
+    entryId: string
+  ): Promise<Result<EntryVersion | null, ValidationError | SystemError>>;
 }
