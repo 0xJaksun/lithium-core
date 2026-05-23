@@ -37,14 +37,20 @@ const EntryVersionRow = z
   }));
 
 export class PostgresEntryAdapter implements EntryStoragePort {
-  constructor(private readonly sql: Sql) {}
+  private readonly entriesTable: string;
+  private readonly versionsTable: string;
+
+  constructor(private readonly sql: Sql, schema?: string) {
+    this.entriesTable = schema ? `${schema}.entries` : "entries";
+    this.versionsTable = schema ? `${schema}.entry_versions` : "entry_versions";
+  }
 
   public async insert(
     input: InsertEntry
   ): Promise<Result<Entry, ValidationError | SystemError>> {
     try {
       const result = await this.sql`
-        INSERT INTO entries (cluster_id)
+        INSERT INTO ${this.sql(this.entriesTable)} (cluster_id)
         VALUES (${input.clusterId})
         RETURNING id, cluster_id, created_at
       `;
@@ -73,7 +79,7 @@ export class PostgresEntryAdapter implements EntryStoragePort {
   ): Promise<Result<EntryVersion, ValidationError | SystemError>> {
     try {
       const result = await this.sql`
-        INSERT INTO entry_versions (entry_id, version)
+        INSERT INTO ${this.sql(this.versionsTable)} (entry_id, version)
         VALUES (${input.entryId}, ${input.version})
         RETURNING id, entry_id, version, created_at
       `;
@@ -103,7 +109,7 @@ export class PostgresEntryAdapter implements EntryStoragePort {
     try {
       const result = await this.sql`
         SELECT id, entry_id, version, created_at
-        FROM entry_versions
+        FROM ${this.sql(this.versionsTable)}
         WHERE entry_id = ${entryId}
         ORDER BY version DESC
         LIMIT 1
@@ -134,7 +140,7 @@ export class PostgresEntryAdapter implements EntryStoragePort {
     try {
       const result = await this.sql`
         SELECT id, cluster_id, created_at
-        FROM entries
+        FROM ${this.sql(this.entriesTable)}
         WHERE cluster_id = ANY(${clusterIds})
         ORDER BY created_at
       `;
@@ -165,7 +171,7 @@ export class PostgresEntryAdapter implements EntryStoragePort {
     try {
       const result = await this.sql`
         SELECT id, entry_id, version, created_at
-        FROM entry_versions
+        FROM ${this.sql(this.versionsTable)}
         WHERE entry_id = ${entryId} AND version = ${version}
       `;
 
@@ -198,7 +204,7 @@ export class PostgresEntryAdapter implements EntryStoragePort {
     try {
       const result = await this.sql`
         SELECT id, cluster_id, created_at
-        FROM entries
+        FROM ${this.sql(this.entriesTable)}
         WHERE id = ${id}
       `;
 
