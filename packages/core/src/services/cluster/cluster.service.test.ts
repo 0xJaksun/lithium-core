@@ -3,6 +3,7 @@ import { mockDeep } from "vitest-mock-extended";
 import type { ClusterStoragePort } from "./cluster.port";
 import type { Cluster } from "./cluster.types";
 import { createClusterService } from ".";
+import { NotFoundError, SystemError } from "../../errors";
 
 describe("ClusterService", () => {
   describe("create", () => {
@@ -105,10 +106,10 @@ describe("ClusterService", () => {
       const result = await service.create({ name: "db", parentPath: "nope" });
 
       // Assert
-      expect(result.success).toBe(false);
-      if (!result.success) {
-        expect(result.error.kind).toBe("NotFoundError");
-      }
+      expect(result).toEqual({
+        success: false,
+        error: expect.any(NotFoundError),
+      });
     });
 
     it("should propagate the port error when findByPath fails", async () => {
@@ -116,7 +117,7 @@ describe("ClusterService", () => {
       const port = mockDeep<ClusterStoragePort>();
       port.findByPath.mockResolvedValue({
         success: false,
-        error: new Error("db down") as any,
+        error: new SystemError("db down"),
       });
       const service = createClusterService(port);
 
@@ -124,7 +125,10 @@ describe("ClusterService", () => {
       const result = await service.create({ name: "db", parentPath: "infra" });
 
       // Assert
-      expect(result.success).toBe(false);
+      expect(result).toEqual({
+        success: false,
+        error: expect.any(SystemError),
+      });
     });
   });
 
