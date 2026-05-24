@@ -4,10 +4,19 @@
   "description": "PostgreSQL adapter for @lithium-ai/core.",
   "type": "module",
   "license": "MIT",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "exports": {
-    ".": "./src/index.ts"
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
   },
+  "files": ["dist", "src/migrations"],
   "scripts": {
+    "build": "tsup && tsc --emitDeclarationOnly --outDir dist",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest"
@@ -18,6 +27,7 @@
     "zod": "^4.4.3"
   },
   "devDependencies": {
+    "tsup": "^8.5.1",
     "typescript": "6.0.3",
     "vitest": "4.1.5"
   },

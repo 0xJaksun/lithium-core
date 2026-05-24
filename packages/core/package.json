@@ -4,16 +4,28 @@
   "description": "Hierarchical versioned content store for structured context.",
   "type": "module",
   "license": "MIT",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "exports": {
-    ".": "./src/index.ts"
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
   },
+  "files": [
+    "dist"
+  ],
   "scripts": {
+    "build": "tsup && tsc --emitDeclarationOnly --outDir dist",
     "typecheck": "tsc --noEmit",
     "test": "vitest run --coverage",
     "test:watch": "vitest"
   },
   "devDependencies": {
     "@vitest/coverage-v8": "^4.1.7",
+    "tsup": "^8.5.1",
     "typescript": "6.0.3",
     "vitest": "4.1.5",
     "vitest-mock-extended": "^4.0.0"
