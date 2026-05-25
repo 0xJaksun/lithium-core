@@ -1,6 +1,6 @@
 {
   "name": "@lithium-ai/core",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Hierarchical versioned content store for structured context.",
   "keywords": [
     "hierarchical",

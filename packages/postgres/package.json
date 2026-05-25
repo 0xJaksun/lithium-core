@@ -1,6 +1,6 @@
 {
   "name": "@lithium-ai/postgres",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "PostgreSQL adapter for @lithium-ai/core.",
   "keywords": [
     "lithium",
