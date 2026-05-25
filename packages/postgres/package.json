@@ -1,7 +1,21 @@
 {
   "name": "@lithium-ai/postgres",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "PostgreSQL adapter for @lithium-ai/core.",
+  "keywords": [
+    "lithium",
+    "postgres",
+    "postgresql",
+    "ltree",
+    "adapter",
+    "hierarchical",
+    "versioned",
+    "storage",
+    "database",
+    "tree",
+    "structured-context",
+    "ai-memory"
+  ],
   "type": "module",
   "license": "MIT",
   "main": "./dist/index.cjs",
