@@ -2,7 +2,7 @@
 
 Hierarchical versioned content store for structured context.
 
-Zero runtime dependencies. TypeScript-first. Hex architecture.
+Zero runtime dependencies. TypeScript-first.
 
 [![npm](https://img.shields.io/npm/v/@lithium-ai/core)](https://www.npmjs.com/package/@lithium-ai/core)
 [![license](https://img.shields.io/npm/l/@lithium-ai/core)](./LICENSE)
@@ -207,7 +207,7 @@ Error types are explicit on every method. No default union. TypeScript tells you
 
 ## Architecture
 
-Lithium Core uses hex architecture. Services contain domain logic, ports define storage contracts, adapters implement them.
+Services handle domain logic. Ports define storage contracts. Adapters implement them.
 
 ```
 Lithium (entry point)

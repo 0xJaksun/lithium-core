@@ -16,6 +16,3 @@ export function postgresAdapter(
     entries: new PostgresEntryAdapter(sql, options?.schema),
   };
 }
-
-export { PostgresClusterAdapter } from "./cluster";
-export { PostgresEntryAdapter } from "./entry";
