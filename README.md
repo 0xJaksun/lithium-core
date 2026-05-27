@@ -22,15 +22,15 @@ const context = await lithium.getContext({ path: "infra" });
 
 Memory graphs don't scale for tree-structured data. Graph traversal becomes a bottleneck. Vector search gives you "similar to X" when you need "everything under X."
 
-PostgreSQL's `ltree` handles tree queries orders of magnitude faster. Index-backed subtree lookups, not traversal. Lithium wraps it in a clean TypeScript API with built-in versioning.
+PostgreSQL's `ltree` handles tree queries significantly faster. Index-backed subtree lookups, not traversal. Lithium wraps it in a clean TypeScript API with built-in versioning.
 
-| | Lithium | Graph DB (Neo4j) | Vector DB (Pinecone) |
-|---|---|---|---|
-| **Structure** | Tree hierarchy | Arbitrary graph | Flat |
-| **Query speed** | ltree index-backed | Graph traversal | ANN search |
-| **Retrieval** | Deterministic, scoped | Pattern matching | Fuzzy, similarity |
-| **Versioning** | Built-in, immutable | Manual | Overwrite |
-| **Infrastructure** | Your existing Postgres | Separate service | Separate service |
+|                    | Lithium                | Graph DBs        | Vector DBs        |
+| ------------------ | ---------------------- | ---------------- | ----------------- |
+| **Structure**      | Tree hierarchy         | Arbitrary graph  | Flat              |
+| **Query speed**    | ltree index-backed     | Graph traversal  | ANN search        |
+| **Retrieval**      | Deterministic, scoped  | Pattern matching | Fuzzy, similarity |
+| **Versioning**     | Built-in, immutable    | Manual           | Overwrite         |
+| **Infrastructure** | Your existing Postgres | Separate service | Separate service  |
 
 ---
 
@@ -132,27 +132,27 @@ Your Content Table
 
 ### Clusters
 
-| Method | What |
-|---|---|
+| Method                                        | What                           |
+| --------------------------------------------- | ------------------------------ |
 | `create({ name, parentPath?, description? })` | Create cluster, resolve parent |
-| `findByPath({ path })` | Find by dot-path |
-| `list()` | All clusters ordered by path |
-| `listDescendantIds({ path })` | ltree subtree query |
+| `findByPath({ path })`                        | Find by dot-path               |
+| `list()`                                      | All clusters ordered by path   |
+| `listDescendantIds({ path })`                 | ltree subtree query            |
 
 ### Entries
 
-| Method | What |
-|---|---|
-| `create({ clusterId })` | New entry + version 1 |
-| `update({ id })` | Auto-increment version |
-| `get({ id, version? })` | Entry + version (latest or specific) |
-| `list({ clusterIds })` | Entries by cluster IDs |
-| `listWithLatestVersion({ clusterIds })` | Entries + latest versions (batch) |
+| Method                                  | What                                 |
+| --------------------------------------- | ------------------------------------ |
+| `create({ clusterId })`                 | New entry + version 1                |
+| `update({ id })`                        | Auto-increment version               |
+| `get({ id, version? })`                 | Entry + version (latest or specific) |
+| `list({ clusterIds })`                  | Entries by cluster IDs               |
+| `listWithLatestVersion({ clusterIds })` | Entries + latest versions (batch)    |
 
 ### Context
 
-| Method | What |
-|---|---|
+| Method                 | What                                            |
+| ---------------------- | ----------------------------------------------- |
 | `getContext({ path })` | Scoped retrieval with optional content resolver |
 
 ## Error Handling
