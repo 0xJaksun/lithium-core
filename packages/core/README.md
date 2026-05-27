@@ -14,7 +14,7 @@ Zero runtime dependencies. TypeScript-first.
 
 Memory graphs and knowledge graphs don't scale for tree-structured data. They're built for arbitrary relationships, not hierarchies. When you need retrievable, scoped memory at scale, graph traversal becomes a bottleneck.
 
-PostgreSQL's `ltree` extension handles tree queries orders of magnitude faster. Subtree lookups are index-backed, not traversal-based. And it runs on the database you already have.
+PostgreSQL's `ltree` extension handles tree queries significantly faster. Subtree lookups are index-backed, not traversal-based. And it runs on the database you already have.
 
 Lithium Core wraps `ltree` in a clean TypeScript API with built-in versioning. Hierarchical storage, deterministic scoped queries, and immutable version history. No new infrastructure, no graph database, no vector search.
 
@@ -31,7 +31,7 @@ A storage engine for hierarchical, versioned content. Think of it as a tree of c
 
 ### How it compares
 
-| | Lithium | Graph DB (Neo4j) | Vector DB (Pinecone) |
+| | Lithium | Graph DBs | Vector DBs |
 |---|---|---|---|
 | **Structure** | Tree hierarchy | Arbitrary graph | Flat |
 | **Query speed** | `ltree` index, O(1) subtree | Graph traversal | ANN search |
