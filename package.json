@@ -5,6 +5,7 @@
   "scripts": {
     "typecheck": "pnpm -r typecheck",
     "test": "pnpm -r test",
+    "test:integration": "pnpm -r test:integration",
     "build": "pnpm -r build"
   },
   "engines": {
