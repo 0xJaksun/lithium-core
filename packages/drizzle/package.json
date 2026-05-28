@@ -1,0 +1,56 @@
+{
+  "name": "@lithium-ai/drizzle",
+  "version": "0.0.1",
+  "description": "Drizzle ORM adapter for @lithium-ai/core.",
+  "keywords": [
+    "lithium",
+    "drizzle",
+    "drizzle-orm",
+    "adapter",
+    "hierarchical",
+    "versioned",
+    "storage",
+    "ltree",
+    "postgres",
+    "ai-memory"
+  ],
+  "type": "module",
+  "license": "MIT",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsup && tsc --emitDeclarationOnly --outDir dist",
+    "typecheck": "tsc --noEmit",
+    "test:integration": "vitest run -c vitest.integration.config.ts --coverage"
+  },
+  "dependencies": {
+    "@lithium-ai/core": "workspace:*",
+    "zod": "^4.4.3"
+  },
+  "peerDependencies": {
+    "drizzle-orm": ">=0.30.0"
+  },
+  "devDependencies": {
+    "@testcontainers/postgresql": "^12.0.1",
+    "drizzle-orm": "0.44.2",
+    "postgres": "^3.4.9",
+    "testcontainers": "^12.0.1",
+    "tsup": "^8.5.1",
+    "typescript": "6.0.3",
+    "vitest": "4.1.5"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
