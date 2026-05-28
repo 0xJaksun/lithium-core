@@ -57,6 +57,7 @@ jobs:
 
   integration:
     name: Integration Tests
+    needs: build
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -66,4 +67,8 @@ jobs:
           node-version: 20
           cache: pnpm
       - run: pnpm install --frozen-lockfile
+      - uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: packages
       - run: pnpm test:integration
