@@ -1,25 +1,20 @@
-import { describe, it, expect, beforeAll } from "vitest";
-import type { Sql } from "postgres";
-import type { IClusterService } from "@lithium-ai/core";
+import { describe, it, expect } from "vitest";
 import { NotFoundError } from "@lithium-ai/core";
 import { PostgresClusterAdapter } from "./cluster.port";
 import { createClusterService } from "@lithium-ai/core";
 import { setupTestDb } from "../test/setup";
 
-const ctx: { sql: Sql; service: IClusterService } = {} as never;
+describe("Cluster Integration", async () => {
+  const clusterService = createClusterService(
+    new PostgresClusterAdapter(await setupTestDb())
+  );
 
-beforeAll(async () => {
-  ctx.sql = await setupTestDb();
-  ctx.service = createClusterService(new PostgresClusterAdapter(ctx.sql));
-});
-
-describe("Cluster Integration", () => {
   it("should create a root cluster with correct shape", async () => {
     // Arrange
     const name = crypto.randomUUID();
 
     // Act
-    const result = await ctx.service.create({ name });
+    const result = await clusterService.create({ name });
 
     // Assert
     expect(result).toEqual({
@@ -38,10 +33,10 @@ describe("Cluster Integration", () => {
   it("should retrieve a created cluster by path", async () => {
     // Arrange
     const name = crypto.randomUUID();
-    const created = await ctx.service.create({ name });
+    const created = await clusterService.create({ name });
 
     // Act
-    const found = await ctx.service.findByPath({ path: name });
+    const found = await clusterService.findByPath({ path: name });
 
     // Assert
     expect(found).toEqual(created);
@@ -51,10 +46,10 @@ describe("Cluster Integration", () => {
     // Arrange
     const parentName = crypto.randomUUID();
     const childName = crypto.randomUUID();
-    await ctx.service.create({ name: parentName });
+    await clusterService.create({ name: parentName });
 
     // Act
-    const child = await ctx.service.create({
+    const child = await clusterService.create({
       name: childName,
       parentPath: parentName,
     });
@@ -72,11 +67,11 @@ describe("Cluster Integration", () => {
   it("should set parentId to the parent cluster ID", async () => {
     // Arrange
     const parentName = crypto.randomUUID();
-    const parent = await ctx.service.create({ name: parentName });
+    const parent = await clusterService.create({ name: parentName });
     if (!parent.success) throw new Error("Parent creation failed");
 
     // Act
-    const child = await ctx.service.create({
+    const child = await clusterService.create({
       name: crypto.randomUUID(),
       parentPath: parentName,
     });
@@ -93,11 +88,11 @@ describe("Cluster Integration", () => {
   it("should include created cluster in list results with correct shape", async () => {
     // Arrange
     const name = crypto.randomUUID();
-    const created = await ctx.service.create({ name });
+    const created = await clusterService.create({ name });
     if (!created.success) throw new Error("Create failed");
 
     // Act
-    const result = await ctx.service.list();
+    const result = await clusterService.list();
     if (!result.success) throw new Error("List failed");
 
     // Assert
@@ -108,16 +103,16 @@ describe("Cluster Integration", () => {
     // Arrange
     const parentName = crypto.randomUUID();
     const childName = crypto.randomUUID();
-    const parent = await ctx.service.create({ name: parentName });
+    const parent = await clusterService.create({ name: parentName });
     if (!parent.success) throw new Error("Parent creation failed");
-    const child = await ctx.service.create({
+    const child = await clusterService.create({
       name: childName,
       parentPath: parentName,
     });
     if (!child.success) throw new Error("Child creation failed");
 
     // Act
-    const result = await ctx.service.listDescendantIds({ path: parentName });
+    const result = await clusterService.listDescendantIds({ path: parentName });
 
     // Assert
     expect(result).toEqual({
@@ -130,13 +125,13 @@ describe("Cluster Integration", () => {
     // Arrange
     const parentName = crypto.randomUUID();
     const unrelatedName = crypto.randomUUID();
-    const parent = await ctx.service.create({ name: parentName });
+    const parent = await clusterService.create({ name: parentName });
     if (!parent.success) throw new Error("Parent creation failed");
-    const unrelated = await ctx.service.create({ name: unrelatedName });
+    const unrelated = await clusterService.create({ name: unrelatedName });
     if (!unrelated.success) throw new Error("Unrelated creation failed");
 
     // Act
-    const result = await ctx.service.listDescendantIds({ path: parentName });
+    const result = await clusterService.listDescendantIds({ path: parentName });
     if (!result.success) throw new Error("listDescendantIds failed");
 
     // Assert
@@ -146,7 +141,7 @@ describe("Cluster Integration", () => {
 
   it("should return NotFoundError for missing parent path", async () => {
     // Act
-    const result = await ctx.service.create({
+    const result = await clusterService.create({
       name: crypto.randomUUID(),
       parentPath: "nonexistent",
     });
