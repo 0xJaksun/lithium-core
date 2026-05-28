@@ -28,11 +28,15 @@
       "require": "./dist/index.cjs"
     }
   },
-  "files": ["dist", "src/migrations"],
+  "files": [
+    "dist",
+    "src/migrations"
+  ],
   "scripts": {
     "build": "tsup && tsc --emitDeclarationOnly --outDir dist",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
+    "test:integration": "vitest run -c vitest.integration.config.ts",
     "test:watch": "vitest"
   },
   "dependencies": {
@@ -41,6 +45,8 @@
     "zod": "^4.4.3"
   },
   "devDependencies": {
+    "@testcontainers/postgresql": "^12.0.1",
+    "testcontainers": "^12.0.1",
     "tsup": "^8.5.1",
     "typescript": "6.0.3",
     "vitest": "4.1.5"
