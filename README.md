@@ -3,7 +3,7 @@
 Hierarchical versioned storage on PostgreSQL ltree. Scoped retrieval, built-in versioning, zero runtime deps.
 
 ```ts
-const lithium = new Lithium(postgresAdapter(sql));
+const lithium = new Lithium(drizzleAdapter(db));
 
 await lithium.clusters.create({ name: "infra" });
 await lithium.clusters.create({ name: "database", parentPath: "infra" });
@@ -13,6 +13,7 @@ const context = await lithium.getContext({ path: "infra" });
 
 [![core](https://img.shields.io/npm/v/@lithium-ai/core?label=core)](https://www.npmjs.com/package/@lithium-ai/core)
 [![postgres](https://img.shields.io/npm/v/@lithium-ai/postgres?label=postgres)](https://www.npmjs.com/package/@lithium-ai/postgres)
+[![drizzle](https://img.shields.io/npm/v/@lithium-ai/drizzle?label=drizzle)](https://www.npmjs.com/package/@lithium-ai/drizzle)
 [![mcp](https://img.shields.io/npm/v/@lithium-ai/mcp?label=mcp)](https://www.npmjs.com/package/@lithium-ai/mcp)
 [![license](https://img.shields.io/github/license/0xJaksun/lithium-core)](./LICENSE)
 
@@ -36,18 +37,34 @@ PostgreSQL's `ltree` handles tree queries significantly faster. Index-backed sub
 
 ## Packages
 
-```
-@lithium-ai/core        Zero-dep storage engine         5 KB
-@lithium-ai/postgres     PostgreSQL ltree adapter         4 KB
-@lithium-ai/mcp          MCP server for AI tools          3 KB
-```
+| Package | What | Size |
+|---|---|---|
+| `@lithium-ai/core` | Zero-dep storage engine | [![](https://img.shields.io/bundlephobia/minzip/@lithium-ai/core)](https://bundlephobia.com/package/@lithium-ai/core) |
+| `@lithium-ai/postgres` | PostgreSQL ltree adapter | [![](https://img.shields.io/bundlephobia/minzip/@lithium-ai/postgres)](https://bundlephobia.com/package/@lithium-ai/postgres) |
+| `@lithium-ai/drizzle` | Drizzle ORM adapter | [![](https://img.shields.io/bundlephobia/minzip/@lithium-ai/drizzle)](https://bundlephobia.com/package/@lithium-ai/drizzle) |
+| `@lithium-ai/mcp` | MCP server for AI tools | [![](https://img.shields.io/bundlephobia/minzip/@lithium-ai/mcp)](https://bundlephobia.com/package/@lithium-ai/mcp) |
 
 ## Quick Start
 
 **Prerequisites:** PostgreSQL with `ltree` extension.
 
+**With Drizzle:**
+
 ```bash
-npm install @lithium-ai/core @lithium-ai/postgres
+npm install @lithium-ai/core @lithium-ai/drizzle drizzle-orm
+```
+
+```ts
+import { Lithium } from "@lithium-ai/core";
+import { drizzleAdapter } from "@lithium-ai/drizzle";
+
+const lithium = new Lithium(drizzleAdapter(db));
+```
+
+**With raw postgres:**
+
+```bash
+npm install @lithium-ai/core @lithium-ai/postgres postgres
 ```
 
 ```ts
@@ -57,13 +74,17 @@ import postgres from "postgres";
 
 const sql = postgres("postgres://...");
 const lithium = new Lithium(postgresAdapter(sql));
+```
 
+**Then:**
+
+```ts
 // Create hierarchy
-await lithium.clusters.create({ name: "infra" });
+const infra = await lithium.clusters.create({ name: "infra" });
 await lithium.clusters.create({ name: "database", parentPath: "infra" });
 
 // Create versioned entries
-const entry = await lithium.entries.create({ clusterId: "..." });
+const entry = await lithium.entries.create({ clusterId: infra.value.id });
 await lithium.entries.update({ id: entry.value.entry.id });
 
 // Scoped retrieval: everything under "infra"
@@ -169,12 +190,24 @@ if (!result.success) {
 
 ## Migrations
 
-Run the reference SQL migrations from `@lithium-ai/postgres`:
+**Drizzle users:** Import the schemas and use `drizzle-kit push`:
+
+```ts
+export { clusters, entries, entryVersions } from "@lithium-ai/drizzle";
+```
+
+```bash
+npx drizzle-kit push
+```
+
+**Raw SQL:** Run the reference migrations from `@lithium-ai/postgres`:
 
 ```bash
 psql -d your_db -f node_modules/@lithium-ai/postgres/src/migrations/001_clusters.sql
 psql -d your_db -f node_modules/@lithium-ai/postgres/src/migrations/002_entries.sql
 ```
+
+Requires `CREATE EXTENSION IF NOT EXISTS ltree;` before running.
 
 ## Roadmap
 
@@ -182,12 +215,21 @@ psql -d your_db -f node_modules/@lithium-ai/postgres/src/migrations/002_entries.
 - [x] PostgreSQL ltree adapter (`@lithium-ai/postgres`)
 - [x] MCP server (`@lithium-ai/mcp`)
 - [x] Content resolver callback for `getContext`
-- [ ] Drizzle ORM adapter
+- [x] Drizzle ORM adapter (`@lithium-ai/drizzle`)
+- [x] GitHub Actions CI
+- [x] Integration tests (testcontainers)
 - [ ] Prisma adapter
 - [ ] Transaction support
-- [ ] Delete operations
-- [ ] GitHub Actions CI
 - [ ] Example projects
+
+## Use Cases
+
+- AI agent memory (structured retrieval, scoped context)
+- Decision tracking across teams
+- Config versioning
+- Documentation hierarchies
+
+Read more: [Memory Graphs Don't Scale](https://dev.to/0xjaksun/memory-graphs-dont-scale-4p0i)
 
 ## Contributing
 
