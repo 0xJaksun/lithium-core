@@ -1,18 +1,20 @@
 {
   "name": "@lithium-ai/drizzle",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Drizzle ORM adapter for @lithium-ai/core.",
   "keywords": [
     "lithium",
     "drizzle",
     "drizzle-orm",
+    "orm",
     "adapter",
+    "postgres",
     "hierarchical",
     "versioned",
-    "storage",
     "ltree",
-    "postgres",
-    "ai-memory"
+    "ai-memory",
+    "ai-infrastructure",
+    "typescript"
   ],
   "type": "module",
   "license": "MIT",
