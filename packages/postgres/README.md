@@ -87,7 +87,7 @@ Implements `EntryStoragePort` from core:
 
 | Method | SQL |
 |---|---|
-| `insert` | `INSERT INTO entries ... RETURNING *` |
+| `createEntry` | Atomic insert entry + version 1 in transaction |
 | `insertVersion` | `INSERT INTO entry_versions ... RETURNING *` |
 | `getLatestVersion` | `ORDER BY version DESC LIMIT 1` |
 | `getLatestVersions` | `DISTINCT ON (entry_id) ORDER BY version DESC` |
