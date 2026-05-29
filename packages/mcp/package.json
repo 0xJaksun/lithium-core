@@ -1,18 +1,24 @@
 {
   "name": "@lithium-ai/mcp",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "MCP server for structured hierarchical memory. Connect @lithium-ai/core to Claude and other AI tools.",
   "keywords": [
     "lithium",
     "mcp",
+    "mcp-server",
     "model-context-protocol",
     "claude",
+    "claude-code",
     "ai-memory",
+    "ai-tools",
+    "ai-context",
     "structured-context",
     "hierarchical",
-    "ai-tools",
-    "claude-code",
-    "mcp-server"
+    "long-term-memory",
+    "memory-layer",
+    "llm",
+    "developer-tools",
+    "typescript"
   ],
   "type": "module",
   "license": "MIT",

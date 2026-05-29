@@ -220,7 +220,7 @@ Requires `CREATE EXTENSION IF NOT EXISTS ltree;` before running.
 - [x] Integration tests (testcontainers)
 - [x] Transaction support (atomic createEntry)
 - [x] MCP write tools (create_cluster, create_entry)
-- [ ] Example projects
+- [x] Example projects
 - [ ] Prisma adapter
 
 ## Use Cases

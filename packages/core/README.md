@@ -306,7 +306,7 @@ All methods return `Promise<Result<T, E>>`.
 | Package | Database | Status |
 |---|---|---|
 | [`@lithium-ai/postgres`](https://www.npmjs.com/package/@lithium-ai/postgres) | PostgreSQL (ltree) | Available |
-| `@lithium-ai/drizzle` | Drizzle ORM | Planned |
+| [`@lithium-ai/drizzle`](https://www.npmjs.com/package/@lithium-ai/drizzle) | Drizzle ORM | Available |
 | `@lithium-ai/prisma` | Prisma | Planned |
 
 ---
