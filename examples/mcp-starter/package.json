@@ -1,0 +1,19 @@
+{
+  "name": "lithium-mcp-starter",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "server": "tsx server.ts",
+    "seed": "tsx seed.ts"
+  },
+  "dependencies": {
+    "@lithium-ai/core": "workspace:*",
+    "@lithium-ai/postgres": "workspace:*",
+    "@lithium-ai/mcp": "workspace:*",
+    "postgres": "^3.4.9"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "tsx": "^4.0.0"
+  }
+}
