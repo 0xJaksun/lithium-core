@@ -218,9 +218,10 @@ Requires `CREATE EXTENSION IF NOT EXISTS ltree;` before running.
 - [x] Drizzle ORM adapter (`@lithium-ai/drizzle`)
 - [x] GitHub Actions CI
 - [x] Integration tests (testcontainers)
-- [ ] Prisma adapter
-- [ ] Transaction support
+- [x] Transaction support (atomic createEntry)
+- [x] MCP write tools (create_cluster, create_entry)
 - [ ] Example projects
+- [ ] Prisma adapter
 
 ## Use Cases
 
