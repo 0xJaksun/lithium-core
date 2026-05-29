@@ -55,21 +55,7 @@ export class EntryService implements IEntryService {
       ValidationError | SystemError
     >
   > {
-    const entry = await this.port.insert({
-      clusterId: params.clusterId,
-    });
-    if (!entry.success) return entry;
-
-    const version = await this.port.insertVersion({
-      entryId: entry.value.id,
-      version: 1,
-    });
-    if (!version.success) return version;
-
-    return {
-      success: true,
-      value: { entry: entry.value, version: version.value },
-    };
+    return this.port.createEntry({ clusterId: params.clusterId });
   }
 
   async update(params: {

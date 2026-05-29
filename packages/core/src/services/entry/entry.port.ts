@@ -6,9 +6,9 @@ export type InsertEntry = Omit<Entry, "id" | "createdAt">;
 export type InsertEntryVersion = Omit<EntryVersion, "id" | "createdAt">;
 
 export interface EntryStoragePort {
-  insert(
+  createEntry(
     input: InsertEntry
-  ): Promise<Result<Entry, ValidationError | SystemError>>;
+  ): Promise<Result<{ entry: Entry; version: EntryVersion }, ValidationError | SystemError>>;
 
   insertVersion(
     input: InsertEntryVersion

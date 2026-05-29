@@ -7,7 +7,7 @@ import { NotFoundError, SystemError } from "../../errors";
 
 describe("EntryService", () => {
   describe("create", () => {
-    it("should insert an entry and version 1 for the given clusterId", async () => {
+    it("should delegate to port.createEntry with the clusterId", async () => {
       // Arrange
       const port = mockDeep<EntryStoragePort>();
       const entry: Entry = {
@@ -21,8 +21,10 @@ describe("EntryService", () => {
         version: 1,
         createdAt: new Date(),
       };
-      port.insert.mockResolvedValue({ success: true, value: entry });
-      port.insertVersion.mockResolvedValue({ success: true, value: version });
+      port.createEntry.mockResolvedValue({
+        success: true,
+        value: { entry, version },
+      });
       const service = createEntryService(port);
 
       // Act
@@ -33,50 +35,20 @@ describe("EntryService", () => {
         success: true,
         value: { entry, version },
       });
-      expect(port.insert).toHaveBeenCalledWith({ clusterId: entry.clusterId });
-      expect(port.insertVersion).toHaveBeenCalledWith({
-        entryId: entry.id,
-        version: 1,
-      });
+      expect(port.createEntry).toHaveBeenCalledWith({ clusterId: entry.clusterId });
     });
 
-    it("should not insert a version when entry insert fails", async () => {
+    it("should propagate error from port.createEntry", async () => {
       // Arrange
       const port = mockDeep<EntryStoragePort>();
-      port.insert.mockResolvedValue({
+      port.createEntry.mockResolvedValue({
         success: false,
-        error: new SystemError("db down"),
+        error: new SystemError("Failed to create entry"),
       });
       const service = createEntryService(port);
 
       // Act
       const result = await service.create({ clusterId: crypto.randomUUID() });
-
-      // Assert
-      expect(result).toEqual({
-        success: false,
-        error: expect.any(SystemError),
-      });
-      expect(port.insertVersion).not.toHaveBeenCalled();
-    });
-
-    it("should return error when version insert fails after entry insert", async () => {
-      // Arrange
-      const port = mockDeep<EntryStoragePort>();
-      const entry: Entry = {
-        id: crypto.randomUUID(),
-        clusterId: crypto.randomUUID(),
-        createdAt: new Date(),
-      };
-      port.insert.mockResolvedValue({ success: true, value: entry });
-      port.insertVersion.mockResolvedValue({
-        success: false,
-        error: new SystemError("version failed"),
-      });
-      const service = createEntryService(port);
-
-      // Act
-      const result = await service.create({ clusterId: entry.clusterId });
 
       // Assert
       expect(result).toEqual({
