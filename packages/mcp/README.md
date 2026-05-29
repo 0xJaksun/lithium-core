@@ -73,6 +73,24 @@ Get all entries and content under a cluster path. Resolves the full subtree via 
 
 Returns descendant cluster IDs, entries with latest versions, and resolved content as JSON.
 
+### `create_cluster`
+
+Create a knowledge domain. Optionally nest under a parent path.
+
+| Parameter | Type | Description |
+|---|---|---|
+| `name` | `string` | Name of the cluster |
+| `parentPath` | `string?` | Dot-separated parent path |
+| `description` | `string?` | Description of the cluster |
+
+### `create_entry`
+
+Create a versioned entry in a cluster. Returns the entry and its first version.
+
+| Parameter | Type | Description |
+|---|---|---|
+| `clusterId` | `string` | ID of the cluster to add the entry to |
+
 ---
 
 ## API
