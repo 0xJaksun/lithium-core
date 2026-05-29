@@ -76,7 +76,7 @@ All DB returns are validated with Zod at the boundary. If the database returns u
 
 | Method | Query |
 |---|---|
-| `insert` | `db.insert(entries).returning()` |
+| `createEntry` | Atomic insert entry + version 1 in transaction |
 | `insertVersion` | `db.insert(entryVersions).returning()` |
 | `getLatestVersion` | `ORDER BY version DESC LIMIT 1` |
 | `getLatestVersions` | `selectDistinctOn([entryId])` |
