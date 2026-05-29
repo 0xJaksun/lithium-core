@@ -1,6 +1,6 @@
 {
   "name": "@lithium-ai/mcp",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "MCP server for structured hierarchical memory. Connect @lithium-ai/core to Claude and other AI tools.",
   "keywords": [
     "lithium",
