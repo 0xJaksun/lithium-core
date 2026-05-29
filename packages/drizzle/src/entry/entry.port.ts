@@ -1,5 +1,10 @@
-import { eq, inArray, desc, and, sql } from "drizzle-orm";
-import type { PgDatabase, PgQueryResultHKT } from "drizzle-orm/pg-core";
+import { eq, inArray, desc, and } from "drizzle-orm";
+import type {
+  PgDatabase,
+  PgQueryResultHKT,
+  PgTransaction,
+} from "drizzle-orm/pg-core";
+import type { ExtractTablesWithRelations } from "drizzle-orm";
 import type {
   Entry,
   EntryStoragePort,
@@ -32,17 +37,21 @@ export class DrizzleEntryAdapter<
 {
   constructor(private readonly db: PgDatabase<TQueryResult, TSchema>) {}
 
-  public async insert(
+  public async createEntry(
     input: InsertEntry
-  ): Promise<Result<Entry, ValidationError | SystemError>> {
-    try {
-      const result = await this.db
+  ): Promise<
+    Result<
+      { entry: Entry; version: EntryVersion },
+      ValidationError | SystemError
+    >
+  > {
+    return this.txResult(async (tx) => {
+      const entryResult = await tx
         .insert(entries)
         .values({ clusterId: input.clusterId })
         .returning();
-
-      const parsed = z.array(EntryRow).length(1).safeParse(result);
-      if (!parsed.success) {
+      const entryParsed = z.array(EntryRow).length(1).safeParse(entryResult);
+      if (!entryParsed.success) {
         return {
           success: false,
           error: new ValidationError(
@@ -51,13 +60,28 @@ export class DrizzleEntryAdapter<
         };
       }
 
-      return { success: true, value: parsed.data[0] };
-    } catch (error) {
+      const versionResult = await tx
+        .insert(entryVersions)
+        .values({ entryId: entryParsed.data[0].id, version: 1 })
+        .returning();
+      const versionParsed = z
+        .array(EntryVersionRow)
+        .length(1)
+        .safeParse(versionResult);
+      if (!versionParsed.success) {
+        return {
+          success: false,
+          error: new ValidationError(
+            "Invalid entry version data returned from database"
+          ),
+        };
+      }
+
       return {
-        success: false,
-        error: new SystemError("Failed to insert entry"),
+        success: true,
+        value: { entry: entryParsed.data[0], version: versionParsed.data[0] },
       };
-    }
+    });
   }
 
   public async insertVersion(
@@ -246,6 +270,35 @@ export class DrizzleEntryAdapter<
       return {
         success: false,
         error: new SystemError("Failed to list entries"),
+      };
+    }
+  }
+
+  private async txResult<T>(
+    fn: (
+      tx: PgTransaction<
+        TQueryResult,
+        TSchema,
+        ExtractTablesWithRelations<TSchema>
+      >
+    ) => Promise<Result<T, ValidationError | SystemError>>
+  ): Promise<Result<T, ValidationError | SystemError>> {
+    let captured: ValidationError | SystemError | null = null;
+
+    try {
+      const value = await this.db.transaction(async (tx) => {
+        const result = await fn(tx);
+        if (!result.success) {
+          captured = result.error;
+          throw result.error;
+        }
+        return result.value;
+      });
+      return { success: true, value };
+    } catch {
+      return {
+        success: false,
+        error: captured ?? new SystemError("Transaction failed"),
       };
     }
   }
